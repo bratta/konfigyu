@@ -2,12 +2,16 @@
 
 ## コンフィギュ
 
-When dealing with adding an application-specific YAML config file, often you end up writing a bunch
+![CircleCI branch](https://img.shields.io/circleci/project/github/bratta/konfigyu/master.svg)
+![GitHub](https://img.shields.io/github/license/bratta/konfigyu.svg)
+![GitHub issues](https://img.shields.io/github/issues/bratta/konfigyu.svg)
+![Gem](https://img.shields.io/gem/v/konfigyu.svg)
+
+When adding an application-specific YAML config file to your project, often you end up writing a bunch
 of boilerplate code to manage the file's location, reading in the contents, and managing required values.
 
 This gem strives to make this an easier process to manage so you can start writing your application quicker.
-
-It relies on the sycl and syck gems to make things very easy to manage.
+It relies on the sycl and syck gems for loading the yaml.
 
 ## Installation
 
@@ -27,13 +31,57 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Basic Usage
+
+Create a YAML config file. For example, `~/konfigyu.yml`
+
+```yaml
+foo:
+  bar: value
+  baz: something-else
+log:
+  level: info
+```
+
+Then, in your code, you can instantiate a new `Konfigyu::Config` object pointing to that file:
+
+```ruby
+require 'konfigyu'
+
+config = Konfigyu::Config.new('~/konfigyu.yml')
+```
+
+You can access the config values through `data` or through array `[]` notation:
+
+```ruby
+puts config.data.foo.baz     # Outputs "something-else"
+puts config['data.foo.baz']  # Also outputs "something-else"
+```
+
+### Required values
+
+You can ensure that certain values are required, and optionally that they contain specific values
+by passing in a hash of options to Konfigyu:
+
+```ruby
+require 'konfigyu'
+
+config = Konfigyu::Config.new('~/konfigyu.yml' {
+  required_fields: ['foo', 'foo.bar', 'log', 'log.level'],
+  required_values: { 'log.level': %w[none fatal error warn info debug] }
+})
+```
+
+Note that if you do not list a field in `required_fields` but include it in `required_values`, it
+will stil validate the contents of the field, but only if the field is non-empty.
+
+If validation fails, a `Konfigui::InvalidConfigException` will be raised.
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 
