@@ -1,0 +1,5 @@
+foo:
+  bar: baz
+  boo: biz
+log:
+  level: info
