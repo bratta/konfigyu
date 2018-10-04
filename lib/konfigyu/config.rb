@@ -42,6 +42,23 @@ module Konfigyu
       data.get(key)
     end
 
+    def respond_to_missing?(method_name, _include_private = false)
+      data && !deep_key_exists?(method_name.to_s.chomp('=')).nil?
+    end
+
+    def method_missing(method_name, *args, &block)
+      return super unless data
+
+      config_chain = method_name.to_s
+      if !config_chain.chomp!('=').nil?
+        data[config_chain] = args.first
+      elsif deep_key_exists?(config_chain)
+        data[config_chain]
+      else
+        super
+      end
+    end
+
     private
 
     def validate_usage
