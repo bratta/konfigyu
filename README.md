@@ -51,11 +51,24 @@ require 'konfigyu'
 config = Konfigyu::Config.new('~/konfigyu.yml')
 ```
 
-You can access the config values through `data` or through array `[]` notation:
+You can access the config values directly, through `data`, or through array `[]` notation:
 
 ```ruby
-puts config.data.foo.baz     # Outputs "something-else"
-puts config['data.foo.baz']  # Also outputs "something-else"
+puts config.foo.baz       # Outputs "something-else"
+puts config.data.foo.baz  # Outputs "something-else"
+puts config['foo.baz']    # Also outputs "something-else"
+```
+
+There's a caveat with the dot notation that comes from the way methods are interpreted in ruby. If you have a config tree that is the same name as a reserved word in ruby, eg. `class`, you will have to access it through the array `[]` notation instead of the dot notation.
+
+```yaml
+class:
+  name: 'Computer Programming'
+```
+
+```ruby
+puts config.class     # Outputs: Konfigyu::Config
+puts config['class']  # Outputs: "Computer Programming"
 ```
 
 ### Required values

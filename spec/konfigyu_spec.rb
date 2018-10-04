@@ -76,6 +76,24 @@ RSpec.describe Konfigyu do
         expect(config['foo.bar']).to eq('baz')
         expect(config['foo.bar.bif']).to be_nil
       end
+
+      it 'responds to config keys as methods' do
+        expect(config).to respond_to(:foo)
+        expect(config).to respond_to(:'foo.bar')
+      end
+
+      it 'does not respond to normal missing methods' do
+        expect(config).not_to respond_to(:bar)
+      end
+
+      it 'utilizes method_missing to get the data directly' do
+        expect(config.foo.bar).to eq('baz')
+        expect(config.foo.bif).to be_nil
+      end
+
+      it 'raises an error if the config key does not exist' do
+        expect { config.bar }.to raise_error(NameError)
+      end
     end
   end
 
